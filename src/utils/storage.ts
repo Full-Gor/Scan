@@ -1,38 +1,16 @@
-import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Document } from '../types';
 
-interface ScannerDB extends DBSchema {
-  documents: {
-    key: string;
-    value: Document;
-    indexes: { 'by-date': Date };
-  };
-}
-
-const DB_NAME = 'scanner-db';
-const DB_VERSION = 1;
-
-let dbPromise: Promise<IDBPDatabase<ScannerDB>> | null = null;
-
-async function getDB(): Promise<IDBPDatabase<ScannerDB>> {
-  if (!dbPromise) {
-    dbPromise = openDB<ScannerDB>(DB_NAME, DB_VERSION, {
-      upgrade(db) {
-        const store = db.createObjectStore('documents', { keyPath: 'id' });
-        store.createIndex('by-date', 'createdAt');
-      },
-    });
-  }
-  return dbPromise;
-}
+const STORAGE_KEY = 'docscan_documents';
 
 export async function loadDocuments(): Promise<Document[]> {
   try {
-    const db = await getDB();
-    const docs = await db.getAll('documents');
-    return docs.sort((a, b) =>
-      new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    );
+    const data = await AsyncStorage.getItem(STORAGE_KEY);
+    if (data) {
+      const docs = JSON.parse(data) as Document[];
+      return docs.sort((a, b) => b.updatedAt - a.updatedAt);
+    }
+    return [];
   } catch (error) {
     console.error('Error loading documents:', error);
     return [];
@@ -41,35 +19,16 @@ export async function loadDocuments(): Promise<Document[]> {
 
 export async function saveDocuments(documents: Document[]): Promise<void> {
   try {
-    const db = await getDB();
-    const tx = db.transaction('documents', 'readwrite');
-
-    // Clear and re-add all documents
-    await tx.store.clear();
-    for (const doc of documents) {
-      await tx.store.put(doc);
-    }
-
-    await tx.done;
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
   } catch (error) {
     console.error('Error saving documents:', error);
   }
 }
 
-export async function saveDocument(document: Document): Promise<void> {
+export async function deleteAllDocuments(): Promise<void> {
   try {
-    const db = await getDB();
-    await db.put('documents', document);
+    await AsyncStorage.removeItem(STORAGE_KEY);
   } catch (error) {
-    console.error('Error saving document:', error);
-  }
-}
-
-export async function deleteDocument(id: string): Promise<void> {
-  try {
-    const db = await getDB();
-    await db.delete('documents', id);
-  } catch (error) {
-    console.error('Error deleting document:', error);
+    console.error('Error deleting documents:', error);
   }
 }

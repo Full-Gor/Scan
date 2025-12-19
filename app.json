@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "DocScan",
+    "slug": "DocScan",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#007AFF"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.docscan.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "DocScan utilise la caméra pour scanner vos documents",
+        "NSPhotoLibraryUsageDescription": "DocScan accède à vos photos pour importer des documents"
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#007AFF"
+      },
+      "package": "com.docscan.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "DocScan utilise la caméra pour scanner vos documents"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "DocScan accède à vos photos pour importer des documents"
+        }
+      ]
+    ]
+  }
+}

@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, type ReactNode, type Dispatch } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, type ReactNode, type Dispatch } from 'react';
 import type { Document, ScannedPage, ViewMode, FilterType } from '../types';
 import { loadDocuments, saveDocuments } from '../utils/storage';
 
@@ -21,8 +21,7 @@ type AppAction =
   | { type: 'UPDATE_PAGE'; payload: { documentId: string; page: ScannedPage } }
   | { type: 'DELETE_PAGE'; payload: { documentId: string; pageId: string } }
   | { type: 'SET_VIEW_MODE'; payload: ViewMode }
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'APPLY_FILTER'; payload: { documentId: string; pageId: string; filter: FilterType } };
+  | { type: 'SET_LOADING'; payload: boolean };
 
 const initialState: AppState = {
   documents: [],
@@ -72,8 +71,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
           return {
             ...doc,
             pages: [...doc.pages, action.payload.page],
-            updatedAt: new Date(),
-            thumbnail: doc.thumbnail || action.payload.page.imageData,
+            updatedAt: Date.now(),
+            thumbnail: doc.thumbnail || action.payload.page.uri,
           };
         }
         return doc;
@@ -92,7 +91,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
             pages: doc.pages.map(page =>
               page.id === action.payload.page.id ? action.payload.page : page
             ),
-            updatedAt: new Date(),
+            updatedAt: Date.now(),
           };
         }
         return doc;
@@ -110,8 +109,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
           return {
             ...doc,
             pages: newPages,
-            updatedAt: new Date(),
-            thumbnail: newPages[0]?.imageData || undefined,
+            updatedAt: Date.now(),
+            thumbnail: newPages[0]?.uri || undefined,
           };
         }
         return doc;
@@ -127,24 +126,6 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
-
-    case 'APPLY_FILTER': {
-      const updatedDocs = state.documents.map(doc => {
-        if (doc.id === action.payload.documentId) {
-          return {
-            ...doc,
-            pages: doc.pages.map(page =>
-              page.id === action.payload.pageId
-                ? { ...page, filter: action.payload.filter }
-                : page
-            ),
-            updatedAt: new Date(),
-          };
-        }
-        return doc;
-      });
-      return { ...state, documents: updatedDocs };
-    }
 
     default:
       return state;
