@@ -1,0 +1,29 @@
+.app {
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* Mobile-first approach */
+@media (min-width: 768px) {
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    min-height: 100vh;
+  }
+}
+
+/* Safe area for notch devices */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .camera-header,
+  .gallery-header,
+  .document-header,
+  .editor-header {
+    padding-top: calc(12px + env(safe-area-inset-top));
+  }
+
+  .camera-controls,
+  .document-footer {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+  }
+}

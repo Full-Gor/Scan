@@ -1,0 +1,19 @@
+{
+  "name": "DocScan - Scanner de Documents",
+  "short_name": "DocScan",
+  "description": "Application de numérisation de documents",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f5f5",
+  "theme_color": "#007AFF",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/scanner-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"]
+}
